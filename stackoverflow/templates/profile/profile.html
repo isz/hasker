@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+{% block title %}{{ block.super }} - Profile{% endblock title %}
+{% block content %}
+    <h2><span class="text-primary">{{user.username}}'s</span> profile</h2>
+
+    {% if user.profile.avatar %}
+        <img src="{{ user.profile.avatar.url }}" alt="Avatar" class="rounded"  height="200px" width="200px">
+    {% else %}
+        <img src="{% static 'avatar.png' %}" alt="Avatar" class="rounded"  height="200px" width="200px">
+    {% endif %}
+
+    
+    <p>Registration date: {{user.profile.reg_date}}</p>
+
+    <form method="post"  enctype="multipart/form-data">
+        {% csrf_token %}
+        <table>
+        <tr>
+            <td>{{ user_form.email.label_tag }}</td>
+            <td>{{ user_form.email|add_class:'form-control' }}</td>
+        </tr>
+        <tr>
+            <td>{{ profile_form.avatar.label_tag }}</td>
+            <td>{{ profile_form.avatar|add_class:'form-control-file' }}</td>
+        </tr>
+        </table>
+
+        <input type="submit" class="btn btn-primary" value="save">
+    <form>
+{% endblock content %}

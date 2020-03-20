@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+
+{% block title %}{{ block.super }} - Error{% endblock title %}
+{% block content %}
+    <p class="text-danger">{{ msg }}</p>
+{% endblock content %}

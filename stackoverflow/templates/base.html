@@ -1,0 +1,95 @@
+{% load static %}
+<html>
+<head>
+    <title>
+        {% block title %}Hasker{% endblock title %}
+    </title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    {% block stylesheets %}
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdn.materialdesignicons.com/4.9.95/css/materialdesignicons.min.css">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    {% endblock stylesheets %}
+</head>
+<body>
+    <nav class="navbar navbar-expand-md navbar-light bg-light fixed-top">
+        <a href="{% url 'home' %}" class="navbar-brand mb-0 h1">Hasker: Poor man's overflow</a>
+        <div class="collapse navbar-collapse">
+            
+                    <form class="form-inline ml-auto my-2 my-lg-0 " method="get" action="{% url 'qanda:questions_list' %}">
+                        <div class="input-group">
+                            <input type="text" name="search_string" class="form-control" placeholder="Search...">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="submit" id="button-search">
+                                    <i class="mdi mdi-magnify"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+            <ul class="navbar-nav">
+                {% block userbar %}
+                {% if user.is_authenticated %}
+                    <li class="nav-item ml-2">
+                        <a href="{% url 'profile:details' %}">
+                            {% if user.profile.avatar %}
+                                <img src="{{ user.profile.avatar.url }}" alt="Avatar" class="rounded-circle"  height="40px" width="40px">
+                            {% else %}
+                                <img src="{% static 'avatar.png' %}" alt="Avatar" class="rounded-circle"  height="40px" width="40px">
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item ml-2 ative"> 
+                        <span class="navbar-text">{{user.username}}</span>
+                    </li>
+                    <li class="nav-item active my-1"> 
+                        <a href="{% url 'profile:logout' %}" class="nav-link">
+                            <i class="mdi mdi-logout"></i>
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile:login' %}">Log In</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'profile:signup' %}">Sign Up</a>
+                    </li>
+                {% endif %}
+                {% endblock userbar %}
+            </ul>
+        </div>
+    </nav>
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-9">
+                {% block content %}
+                    <h1>Base content</h1>
+                    <p class="lead">Normally you should not see it.</p>
+                {% endblock content %}
+            </div>
+            <div class="col-3">
+                <aside class="conatiner">
+                    <div>
+                        {% if user.is_authenticated %}
+                            <a href="{% url 'qanda:ask_question' %}" role="button" class="btn btn-primary">Ask</a>
+                        {% endif %}
+                    </div>
+                    <h4>Trending:</h4>
+                    {% for question in trends %}
+                        <div class="pb-3">
+                            <span class="p-2 mr-2 bg-info text-white">
+                            {{ question.rating }}
+                            </span>
+                            <a href="{% url 'qanda:question' question.id %}">{{ question.title }}</a>
+                        </div>
+                    {% endfor %}
+                </aside>
+            </div>
+        </div>
+    </main>
+    
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+</body>
+</html>

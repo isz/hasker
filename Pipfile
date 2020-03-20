@@ -1,0 +1,19 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pylint = "*"
+autopep8 = "*"
+rope = "*"
+
+[packages]
+django = "*"
+django-debug-toolbar = "*"
+psycopg2-binary = "*"
+django-widget-tweaks = "*"
+pillow = "*"
+
+[requires]
+python_version = "3.7"

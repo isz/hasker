@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+stackoverflow/media/
+config/settings/secret.py

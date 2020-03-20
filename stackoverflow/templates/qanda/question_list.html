@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% load static %}
+{% load filters %}
+{% load tags %}
+{% block content %}
+
+<h2>{{ header }}</h2>
+<a href="?{% param_replace order_by='date' %}">New questions</a> | <a href="?{% param_replace order_by='rating' %}">Hot questions</a>
+
+{% if page_obj.paginator.num_pages > 1 %}
+    <div class="btn-toolbar mb-2" role="toolbar">
+        <div class="btn-group mr-2" role="group">
+            {% if page_obj.has_previous %}
+            <a href="?{% param_replace page=1 %}" role="button" class="btn btn-secondary">&laquo;</a>
+            <a href="?{% param_replace page=page_obj.previous_page_number %}" role="button" class="btn btn-secondary">&lt;</a>
+            {% endif %}
+            {% for page_num in page_obj.paginator.num_pages|page_range %}
+                {% if page_num == page_obj.number %}
+                    <button class="btn btn-secondary" disabled>{{ page_num }}</button>
+                {% else %}
+                    <a href="?{% param_replace page=page_num %}" role="button" class="btn btn-secondary">{{ page_num }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <a href="?{% param_replace page=page_obj.next_page_number %}" role="button" class="btn btn-secondary">&gt;</a>
+            <a href="?{% param_replace page=page_obj.paginator.num_pages %}" role="button" class="btn btn-secondary">&raquo;</a>
+             {% endif %}
+        </div>
+    </div>
+{% endif %}
+
+<hr>
+{% for question in page_obj %}
+<div class="row">
+    <div class="col-1">
+        <div>
+            {{ question.votes.count }}
+        </div>
+        <div>
+            Votes
+        </div> 
+    </div>
+    <div class="col-1">
+        <div>
+            {{ question.answers.count }}
+        </div>
+        <div>
+            Answers
+        </div>
+    </div>
+    <div class="col-7">
+        <div>
+            <a href="{% url 'qanda:question' question.id %}">{{ question.title }}</a>
+        </div>
+        <div>
+            {% for tag in question.tags.all %}
+                <a href="{% url 'qanda:questions_list' %}?search_string=tag:{{tag.text}}" role="button" class="btn btn-info">
+                    {{ tag.text }}
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-3">
+        <div>
+            {{ question.user.username }}
+        </div>
+        <div>
+            Asked {{ question.age }} ago
+        </div>
+    </div>
+</div>
+<hr>
+{% endfor %}
+{% if page_obj.paginator.num_pages > 1 %}
+    <div class="btn-toolbar mb-2" role="toolbar">
+        <div class="btn-group mr-2" role="group">
+            {% if page_obj.has_previous %}
+            <a href="?{% param_replace page=1 %}" role="button" class="btn btn-secondary">&laquo;</a>
+            <a href="?{% param_replace page=page_obj.previous_page_number %}" role="button" class="btn btn-secondary">&lt;</a>
+            {% endif %}
+            {% for page_num in page_obj.paginator.num_pages|page_range %}
+                {% if page_num == page_obj.number %}
+                    <button class="btn btn-secondary" disabled>{{ page_num }}</button>
+                {% else %}
+                    <a href="?{% param_replace page=page_num %}" role="button" class="btn btn-secondary">{{ page_num }}</a>
+                {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <a href="?{% param_replace page=page_obj.next_page_number %}" role="button" class="btn btn-secondary">&gt;</a>
+            <a href="?{% param_replace page=page_obj.paginator.num_pages %}" role="button" class="btn btn-secondary">&raquo;</a>
+             {% endif %}
+        </div>
+    </div>
+{% endif %}
+{% endblock content %}

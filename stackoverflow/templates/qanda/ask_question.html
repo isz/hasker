@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}{{ block.super }} - Ask question{% endblock title %}
+{% block content %}
+    <h2><span class="text-primary">Ask question</span> profile</h2>
+
+    <form method="post"  enctype="multipart/form-data">
+        {% csrf_token %}
+        <table>
+        <tr>
+            <td>{{ form.title.label_tag }}</td>
+            <td>{{ form.title|add_class:'form-control' }}</td>
+            <td>{{ form.title.errors }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.text.label_tag }}</td>
+            <td>{{ form.text|add_class:'form-control' }}</td>
+            <td>{{ form.text.errors }}</td>
+        </tr>
+        <tr>
+            <td>{{ form.tags.label_tag }}</td>
+            <td>{{ form.tags|add_class:'form-control' }}</td>
+            <td>{{ form.tags.errors }}</td>
+        </tr>
+        </table>
+
+        <input type="submit" class="btn btn-primary" value="save">
+    <form>
+{% endblock content %}
