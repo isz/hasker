@@ -1,7 +1,8 @@
 import os
 
 from .base import *
-from .secret import *
+
+SECRET_KEY = "ihgvbishgovhwergoewrhjio"
 
 DEBUG = True
 
@@ -9,8 +10,14 @@ INSTALLED_APPS += ['debug_toolbar',]
 
 MIDDLEWARE += ['debug_toolbar.middleware.DebugToolbarMiddleware',]
 
+MEDIA_ROOT = root('stackoverflow/media')
+
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+
+DB_NAME = "hasker"
+DB_USER = "hasker_user"
+DB_PASSWORD = "12345"
 
 DATABASES = {
     'default': {

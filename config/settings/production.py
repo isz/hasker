@@ -1,8 +1,13 @@
+import os
 from .base import *
-from .secret import DB_NAME, DB_USER, DB_PASSWORD
+from .secret import *
 
-DEBUG = False
+DEBUG = True
 
+MEDIA_ROOT = os.environ['MEDIA_ROOT']
+STATIC_ROOT = os.environ.get('STATIC_ROOT', '')
+
+print(MEDIA_ROOT)
 
 DATABASES = {
     'default': {
@@ -10,10 +15,11 @@ DATABASES = {
         'NAME': DB_NAME,
         'USER': DB_USER,
         'PASSWORD': DB_PASSWORD,
-        'HOST': '127.0.0.1',
+        'HOST': DB_HOST,
         'PORT': '5432',
     }
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -38,5 +44,4 @@ QUESTIONS_PER_PAGE = 20
 QUESTIONS_PER_SEARCH_PAGE = 20
 TRENDS_PER_PAGE = 20
 
-EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True

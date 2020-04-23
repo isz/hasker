@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
-from .secret import SECRET_KEY
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -23,7 +22,6 @@ def root(*dirs):
 
 
 BASE_DIR = root()
-MEDIA_ROOT = root('stackoverflow/media')
 STATIC_ROOT = root('stackoverflow/static_root')
 STATICFILES_DIRS = [root('stackoverflow/static')]
 
@@ -34,7 +32,6 @@ STATICFILES_DIRS = [root('stackoverflow/static')]
 # SECURITY WARNING: keep the secret key used in production secret!
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
 
 ALLOWED_HOSTS = []
 

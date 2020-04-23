@@ -24,7 +24,6 @@ def profile_view(request):
     else:
         user_form = UserForm(instance=request.user)
         profile_form = ProfileForm(instance=request.user.profile)
-        print(request.user.profile.avatar.url)
     return render(request, 'profile/profile.html', {
         'user_form': user_form,
         'profile_form': profile_form
@@ -33,7 +32,7 @@ def profile_view(request):
 
 def signup(request):
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
+        form = SignUpForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.save()
             user.refresh_from_db()
