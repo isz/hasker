@@ -5,16 +5,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.shortcuts import reverse
-
-from datetime import datetime, timedelta
 from django.utils import timezone
 
-'''
-Сущности:
-2. Вопрос – заголовок, содержание, автор, дата создания, тэги.
-3. Ответ – содержание, автор, дата написания, флаг правильного ответа.
-4. Тэг — слово тэга.
-'''
+import logging
+from datetime import datetime, timedelta
 
 
 class TagsManager(models.Manager):
@@ -27,15 +21,19 @@ class TagsManager(models.Manager):
 
 
 class Tag(models.Model):
-    text = models.CharField(
-        primary_key=True, verbose_name='text', max_length=32)
+    """
+    Модель сущности Тэг
+    """
+    text = models.CharField(primary_key=True, verbose_name="text", max_length=32)
 
     objects = TagsManager()
 
 
-
 class Entry(models.Model):
-    vote_class_name = ''
+    """
+    Абстрактная модель запией
+    """
+    vote_class_name = ""
 
     def __init__(self, *args, **kwargs):
         self.vote_class = getattr(sys.modules[__name__], self.vote_class_name)
@@ -44,46 +42,53 @@ class Entry(models.Model):
     class Meta:
         abstract = True
 
-    date = models.DateField(verbose_name='Creation date', auto_now_add=True)
+    date = models.DateField(verbose_name="Creation date", auto_now_add=True)
     rating = models.IntegerField(default=0, blank=True)
 
     def set_action_attrs(self, user):
         try:
             vote_val = self.votes.get(user=user).value
             if vote_val == 1:
-                self.like='cancel'
-                self.dislike='dislike'
+                self.like = "cancel"
+                self.dislike = "dislike"
             else:
-                self.like='like'
-                self.dislike='cancel'
+                self.like = "like"
+                self.dislike = "cancel"
         except self.votes.model.DoesNotExist:
-            self.like='like'
-            self.dislike='dislike'
+            self.like = "like"
+            self.dislike = "dislike"
+
 
 class Question(Entry):
-    user = models.ForeignKey(User, related_name='questions', on_delete=models.CASCADE)
-    title = models.CharField(verbose_name='Title', max_length=255)
-    text = models.TextField(verbose_name='Text')
-    tags = models.ManyToManyField(Tag, verbose_name='Tags')
-    correct_answer = models.ForeignKey('Answer', default=None, null=True, blank=True, on_delete=models.SET_DEFAULT)
+    """
+    Модель сущности Вопрос
+    """
+    user = models.ForeignKey(User, related_name="questions", on_delete=models.CASCADE)
+    title = models.CharField(verbose_name="Title", max_length=255)
+    text = models.TextField(verbose_name="Text")
+    tags = models.ManyToManyField(Tag, verbose_name="Tags")
+    correct_answer = models.ForeignKey(
+        "Answer", default=None, null=True, blank=True, on_delete=models.SET_DEFAULT
+    )
     date = models.DateTimeField(auto_now_add=True)
 
-    vote_class_name = 'QuestionVote'
+    vote_class_name = "QuestionVote"
 
     def get_absolute_url(self):
-        return reverse('qanda:question', args=(self.id,))
+        return reverse("qanda:question", args=(self.id,))
 
     def set_correct_answer(self, answ_id, user):
         if self.correct_answer:
-            raise ValueError('Correct answer exist')
-        
+            raise ValueError("Correct answer exist")
+
         if user != self.user:
-            raise ValueError('Only for question owner')
+            raise ValueError("Only for question owner")
 
         try:
             answ = self.answers.get(pk=answ_id)
         except Answer.DoesNotExist:
-            raise ValueError('The answer does not match the question')
+            logging.error(f"The answer (id={answ_id}) does not match the question")
+            raise ValueError("The answer does not match the question")
 
         self.correct_answer = answ
         self.save()
@@ -94,49 +99,50 @@ class Question(Entry):
         val = delta.total_seconds()
 
         if delta < timedelta(minutes=1):
-            text = 'second'
+            text = "second"
         elif delta < timedelta(hours=1):
-            val = val/60
-            text = 'minute'
+            val = val / 60
+            text = "minute"
         elif delta < timedelta(days=1):
-            val = val/(60*60)
-            text = 'hour'
+            val = val / (60 * 60)
+            text = "hour"
         else:
-            val = val/(60*60*24)
-            text = 'day'
-        
+            val = val / (60 * 60 * 24)
+            text = "day"
 
         val = int(val)
         if val > 1:
-            text += 's'
-        return f'{val} {text}'
-
+            text += "s"
+        return f"{val} {text}"
 
 
 class Answer(Entry):
-    user = models.ForeignKey(User, related_name='answers', on_delete=models.CASCADE)
+    """
+    Модель сущности Ответ
+    """
+    user = models.ForeignKey(User, related_name="answers", on_delete=models.CASCADE)
     to_question = models.ForeignKey(
-        Question, related_name='answers', on_delete=models.CASCADE)
+        Question, related_name="answers", on_delete=models.CASCADE
+    )
     text = models.TextField(verbose_name="Answer")
     date = models.DateTimeField(auto_now_add=True)
 
-    vote_class_name = 'AnswerVote'
+    vote_class_name = "AnswerVote"
 
-    def notify_question_owner(self, request):
-        question =  self.to_question
+    def notify_question_owner(self, question_uri):
+        question = self.to_question
 
-        subject, from_email, to = 'Answer to your question', settings.EMAIL_FROM, question.user.email
+        subject, from_email, to = (
+            "Answer to your question",
+            settings.EMAIL_FROM,
+            question.user.email,
+        )
         text_content = f'You received answer to your question "{question.title}".'
-
-
-        url = request.build_absolute_uri(reverse('qanda:question', args=(question.id, )))
-
-        html_content = f'You received answer to your question <a href="{url}">"{question.title}"</a>.'
+        html_content = f'You received answer to your question <a href="{question_uri}">"{question.title}"</a>.'
 
         msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
-
 
 
 class VoteModel(models.Model):
@@ -148,13 +154,13 @@ class VoteModel(models.Model):
 
     @classmethod
     def vote(cls, obj_id, user, action):
-        value = 1 if action == 'like' else -1
-        
+        value = 1 if action == "like" else -1
+
         try:
-            instance = cls.objects.select_related('to').get(to=obj_id, user=user)
+            instance = cls.objects.select_related("to").get(to=obj_id, user=user)
 
             if instance.value != value:
-                if instance.value == -1 and value==1:
+                if instance.value == -1 and value == 1:
                     correction = 2
                 else:
                     correction = -2
@@ -169,16 +175,15 @@ class VoteModel(models.Model):
             to_instance = cls.to_model_class.objects.get(pk=obj_id)
             instance = cls(user=user, to=to_instance, value=value)
             to_instance.rating += value
-            
+
         to_instance.save()
         instance.save()
         return instance
 
-
     @classmethod
     def cancel(cls, obj_id, user):
         try:
-            instance = cls.objects.select_related('to').get(to=obj_id, user=user)
+            instance = cls.objects.select_related("to").get(to=obj_id, user=user)
 
             instance.to.rating += instance.value * -1
             instance.to.save()
@@ -187,13 +192,11 @@ class VoteModel(models.Model):
             pass
 
 
-
 class QuestionVote(VoteModel):
     to_model_class = Question
-    to = models.ForeignKey(Question, related_name='votes', on_delete=models.CASCADE)
-    
+    to = models.ForeignKey(Question, related_name="votes", on_delete=models.CASCADE)
+
 
 class AnswerVote(VoteModel):
     to_model_class = Answer
-    to = models.ForeignKey(Answer, related_name='votes', on_delete=models.CASCADE)
-
+    to = models.ForeignKey(Answer, related_name="votes", on_delete=models.CASCADE)

@@ -5,12 +5,7 @@
 
 {% block title %}{{ block.super }} - {{ question.title }}{% endblock title %}
 {% block content %}
-    {% if question.user.profile.avatar %}
-        <img src="{{ question.user.profile.avatar.url }}" alt="Avatar" class="rounded-circle"  height="40px" width="40px">
-    {% else %}
-        <img src="{% static 'avatar.png' %}" alt="Avatar" class="rounded-circle"  height="40px" width="40px">
-    {% endif %}
-    
+    <img src="{{ question.user.profile.avatar_url }}" alt="Avatar" class="rounded-circle"  height="40px" width="40px">
     <h2>{{ question.title }}</h2>
     
     <div class="row">
@@ -20,7 +15,11 @@
             <input type="hidden" name="from_page" value="{{ answer_page.number }}">
                 {% csrf_token %}
                 <div>
-                    <button type="submit" formaction="{% url 'qanda:vote_question' pk=question.id action=question.like %}" class="btn btn-default {{ question.like }}">
+                    <button
+                        type="submit"
+                        formaction="{% url 'qanda:vote_question' pk=question.id action=question.like %}"
+                        class="btn btn-default {{ question.like }}"
+                    >
                         <span class="mdi mdi-chevron-up"></span>
                     </button>
                     
@@ -31,7 +30,11 @@
                 </div>
         {% if user.is_authenticated %}
                 <div>
-                    <button type="submit" formaction="{% url 'qanda:vote_question' pk=question.id action=question.dislike %}" class="btn btn-default  {{ question.dislike }}">
+                    <button
+                        type="submit"
+                        formaction="{% url 'qanda:vote_question' pk=question.id action=question.dislike %}"
+                        class="btn btn-default  {{ question.dislike }}"
+                    >
                         <span class="mdi mdi-chevron-down"></span>
                     </button>
                 </div>  
@@ -45,7 +48,11 @@
     <div class="row">
         <div class="col-12">
             {% for tag in question.tags.all %}
-                <a href="{% url 'qanda:questions_list' %}?search_string=tag:{{tag.text}}" role="button" class="btn btn-info">
+                <a
+                    href="{% url 'qanda:questions_list' %}?search_string=tag:{{tag.text}}"
+                    role="button"
+                    class="btn btn-info"
+                >
                     {{ tag.text }}
                 </a>
             {% endfor %}
@@ -58,22 +65,41 @@
                 <div class="btn-group mr-2" role="group">
 
                     {% if answer_page.has_previous %}
-                    <a href="{% url 'qanda:question' question.id %}" role="button" class="btn btn-secondary">&laquo;</a>
-                    <a href="{% url 'qanda:question_page' question.id answer_page.previous_page_number %}" role="button" class="btn btn-secondary">&lt;</a>
+                    <a
+                        href="{% url 'qanda:question' question.id %}"
+                        role="button"
+                        class="btn btn-secondary"
+                    >&laquo;</a>
+                    <a
+                        href="{% url 'qanda:question_page' question.id answer_page.previous_page_number %}"
+                        role="button"
+                        class="btn btn-secondary"
+                    >&lt;</a>
                     {% endif %}
                     
                     {% for page_num in answer_page.paginator.num_pages|page_range %}
                         {% if page_num == answer_page.number %}
                             <button class="btn btn-secondary" disabled>{{ page_num }}</button>
                         {% else %}
-                            <a href="{% url 'qanda:question_page' question.id page_num %}" role="button" class="btn btn-secondary">{{ page_num }}</a>
+                            <a
+                                href="{% url 'qanda:question_page' question.id page_num %}"
+                                role="button" class="btn btn-secondary"
+                            >{{ page_num }}</a>
                         {% endif %}
                     {% endfor %}
 
                     {% if answer_page.has_next %}
-                    <a href="{% url 'qanda:question_page' question.id answer_page.next_page_number%}" role="button" class="btn btn-secondary">&gt;</a>
-                    <a href="{% url 'qanda:question_page' question.id answer_page.paginator.num_pages %}" role="button" class="btn btn-secondary">&raquo;</a>
-                     {% endif %}
+                        <a
+                            href="{% url 'qanda:question_page' question.id answer_page.next_page_number%}"
+                            role="button"
+                            class="btn btn-secondary"
+                        >&gt;</a>
+                        <a
+                            href="{% url 'qanda:question_page' question.id answer_page.paginator.num_pages %}"
+                            role="button"
+                            class="btn btn-secondary"
+                        >&raquo;</a>
+                    {% endif %}
                 </div>
             </div>
         {% endif %}
@@ -86,7 +112,11 @@
                     {% csrf_token %}
                         <input name="question" type="hidden" value="{{ question.id }}">
                         <div>
-                            <button type="submit" formaction="{% url 'qanda:vote_answer' pk=answ.id action=answ.like %}" class="btn btn-default {{ answ.like }}">
+                            <button
+                                type="submit"
+                                formaction="{% url 'qanda:vote_answer' pk=answ.id action=answ.like %}"
+                                class="btn btn-default {{ answ.like }}"
+                            >
                                 <span class="mdi mdi-chevron-up"></span>
                             </button>
                         </div>
@@ -96,7 +126,11 @@
                         </div>
                     {% if user.is_authenticated %}
                         <div>
-                            <button type="submit" formaction="{% url 'qanda:vote_answer' pk=answ.id action=answ.dislike %}" class="btn btn-default {{ answ.dislike }}">
+                            <button
+                                type="submit"
+                                formaction="{% url 'qanda:vote_answer' pk=answ.id action=answ.dislike %}"
+                                class="btn btn-default {{ answ.dislike }}"
+                            >
                                 <span class="mdi mdi-chevron-down"></span>
                             </button>
                         </div>
@@ -112,7 +146,11 @@
                             {% endif %}
                         {% else %}
                             <div>
-                                <button type="submit" formaction="{% url 'qanda:correct_answer' pk=question.id answ_id=answ.id %}" class="btn btn-default {{ answ.dislike }}">
+                                <button
+                                    type="submit"
+                                    formaction="{% url 'qanda:correct_answer' pk=question.id answ_id=answ.id %}"
+                                    class="btn btn-default {{ answ.dislike }}"
+                                >
                                     Mark correct
                                 </button>
                             </div>
@@ -126,11 +164,12 @@
             </div>
             <div class="row justify-content-end">
                     <div class="col-2">
-                        {% if answ.user.profile.avatar %}
-                            <img src="{{ answ.user.profile.avatar.url }}" alt="Avatar" class="rounded-circle"  height="40px" width="40px">
-                        {% else %}
-                            <img src="{% static 'avatar.png' %}" alt="Avatar" class="rounded-circle"  height="40px" width="40px">
-                        {% endif %}
+                        <img
+                            src="{{ answ.user.profile.avatar_url }}"
+                            alt="Avatar" class="rounded-circle"
+                            height="40px"
+                            width="40px"
+                        >
                         <span class="ml-1">{{ answ.user.username }}</span>
                     </div>
             </div>
@@ -141,21 +180,41 @@
                 <div class="btn-group mr-2" role="group">
 
                     {% if answer_page.has_previous %}
-                    <a href="{% url 'qanda:question' question.id %}" role="button" class="btn btn-secondary">&laquo;</a>
-                    <a href="{% url 'qanda:question_page' question.id answer_page.previous_page_number %}" role="button" class="btn btn-secondary">&lt;</a>
+                    <a
+                        href="{% url 'qanda:question' question.id %}"
+                        role="button"
+                        class="btn btn-secondary"
+                    >&laquo;</a>
+                    <a
+                        href="{% url 'qanda:question_page' question.id answer_page.previous_page_number %}"
+                        role="button"
+                        class="btn btn-secondary"
+                    >&lt;</a>
                     {% endif %}
                     
                     {% for page_num in answer_page.paginator.num_pages|page_range %}
                         {% if page_num == answer_page.number %}
                             <button class="btn btn-secondary" disabled>{{ page_num }}</button>
                         {% else %}
-                            <a href="{% url 'qanda:question_page' question.id page_num %}" role="button" class="btn btn-secondary">{{ page_num }}</a>
+                            <a
+                                href="{% url 'qanda:question_page' question.id page_num %}"
+                                role="button"
+                                class="btn btn-secondary"
+                            >{{ page_num }}</a>
                         {% endif %}
                     {% endfor %}
 
                     {% if answer_page.has_next %}
-                    <a href="{% url 'qanda:question_page' question.id answer_page.next_page_number%}" role="button" class="btn btn-secondary">&gt;</a>
-                    <a href="{% url 'qanda:question_page' question.id answer_page.paginator.num_pages %}" role="button" class="btn btn-secondary">&raquo;</a>
+                    <a
+                        href="{% url 'qanda:question_page' question.id answer_page.next_page_number%}"
+                        role="button"
+                        class="btn btn-secondary"
+                    >&gt;</a>
+                    <a
+                        href="{% url 'qanda:question_page' question.id answer_page.paginator.num_pages %}"
+                        role="button"
+                        class="btn btn-secondary"
+                    >&raquo;</a>
                      {% endif %}
                 </div>
             </div>
@@ -165,13 +224,7 @@
     <h4>Add your answer:</h4>
         <form method="post" action="{% url 'qanda:answer' %}">
             {% csrf_token %}
-            <table>
-                <tr>
-                    <td>{{ form.text.label_tag }}</td> 
-                    <td>{{ form.text|add_class:'form-control' }}</td>
-                </tr>
-            </table>
-            {{ form.to_question }}
+            {{ form.as_p}}
             <input type="submit" class="btn btn-primary" value="Answer">
         <form>
     {% endif %}

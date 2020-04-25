@@ -4,38 +4,32 @@ from .secret import *
 
 DEBUG = True
 
-MEDIA_ROOT = os.environ['MEDIA_ROOT']
-STATIC_ROOT = os.environ.get('STATIC_ROOT', '')
+MEDIA_ROOT = os.environ["MEDIA_ROOT"]
+STATIC_ROOT = os.environ.get("STATIC_ROOT", "")
 
 print(MEDIA_ROOT)
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': DB_NAME,
-        'USER': DB_USER,
-        'PASSWORD': DB_PASSWORD,
-        'HOST': DB_HOST,
-        'PORT': '5432',
-    }
-}
+db = DATABASES['default']
+db["HOST"] = DB_HOST
+db["NAME"] = DB_NAME
+db["USER"] = DB_USER
+db["PASSWORD"] = DB_PASSWORD
 
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
-
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
 ]
 

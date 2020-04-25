@@ -3,21 +3,22 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
 from .models import Profile
+from stackoverflow.common.mixins import BootstrapMixin
 
 
-class UserForm(forms.ModelForm):
+class UserForm(BootstrapMixin, forms.ModelForm):
     class Meta:
         model = User
         fields = ('email',)
 
 
-class ProfileForm(forms.ModelForm):
+class ProfileForm(BootstrapMixin, forms.ModelForm):
     class Meta:
         model = Profile
         fields = ('avatar', )
 
 
-class SignUpForm(UserCreationForm):
+class SignUpForm(BootstrapMixin, UserCreationForm ):
     avatar = forms.ImageField(required=False, label='Avatar')
 
     class Meta:

@@ -5,8 +5,8 @@ verify_ssl = true
 
 [dev-packages]
 pylint = "*"
-autopep8 = "*"
 rope = "*"
+black = "*"
 
 [packages]
 django = "*"
@@ -17,3 +17,6 @@ pillow = "*"
 
 [requires]
 python_version = "3"
+
+[pipenv]
+allow_prereleases = true

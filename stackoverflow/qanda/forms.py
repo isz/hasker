@@ -1,18 +1,9 @@
 from django import forms
 
-
 from . import models
+from stackoverflow.common.validators import max_three_tags, like_dislike_validator
 
-
-def max_three_tags(tags):
-    if len(tags.split(',')) > 3:
-        raise(forms.ValidationError('Maximum three tags requared'))
-
-
-def like_dislike_validator(value):
-    if value not in (-1, 1):
-        raise(forms.ValidationError('-1 or 1 value expected'))
-
+from stackoverflow.common.mixins import BootstrapMixin
 
 class TagsField(forms.CharField):
     def __init__(self, *args, **kwargs):
@@ -22,10 +13,10 @@ class TagsField(forms.CharField):
     def clean(self, value):
         value = super().clean(value.lower())
 
-        return [tag.strip() for tag in value.split(',')]
+        return [tag.strip() for tag in value.split(",")]
 
 
-class AskQuestionForm(forms.ModelForm):
+class AskQuestionForm(BootstrapMixin, forms.ModelForm):
     tags = TagsField(max_length=128)
 
     class Meta:
@@ -37,7 +28,7 @@ class AskQuestionForm(forms.ModelForm):
 
     def save(self, commit=True, *args, **kwargs):
         instance = super().save(commit=False, *args, **kwargs)
-        tags = self.cleaned_data.get('tags')
+        tags = self.cleaned_data.get("tags")
         print(tags)
         if commit:
             tags_qs = models.Tag.objects.queryset_from_list(tags)
@@ -50,13 +41,13 @@ class AskQuestionForm(forms.ModelForm):
         return instance
 
 
-class AnswerForm(forms.ModelForm):
+class AnswerForm(BootstrapMixin, forms.ModelForm):
     class Meta:
         model = models.Answer
         fields = [
-            'text',
-            'to_question',
+            "text",
+            "to_question",
         ]
         widgets = {
-            'to_question': forms.HiddenInput(),
+            "to_question": forms.HiddenInput(),
         }
